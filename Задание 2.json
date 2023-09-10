@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "fb39565d-becb-42d5-a9aa-6bf29c9b4d32",
+		"name": "pet store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23584002"
+	},
+	"item": [
+		{
+			"name": "new pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"// Записываем значение 'id' из ответа в глобальную переменную with a key, например, 'responseId'",
+							"pm.globals.set(\"responseId\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 42,\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"cat\"\n  },\n  \"name\": \"Happy Cat\",\n  \"photoUrls\": [\n    \"https://pngicon.ru/file/uploads/cat_hungry.png\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"CatCatCatHochHochHoch\"\n    }\n  ],\n  \"status\": \"available\"\n}"
+				},
+				"url": {
+					"raw": "https://petstore.swagger.io/v2/pet/",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						"v2",
+						"pet",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sold pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const respBody = pm.response.json();",
+							"respBody.status = \"sold\";",
+							"",
+							"// Определить PUT-запрос",
+							"const putRequest = {",
+							"    url: 'https://petstore.swagger.io/v2/pet',",
+							"    method: 'PUT',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(respBody),",
+							"    },",
+							"};",
+							"",
+							"// Отправить PUT-запрос с измененными данными",
+							"pm.sendRequest(putRequest, (error, response) => {",
+							"    // Если нет ошибки и ответ успешный, проверьте результат",
+							"    if (!error && response.code === 200) {",
+							"        const updatedPet = response.json();",
+							"",
+							"        if (updatedPet.status === \"sold\") {",
+							"            console.log(\"Изменение статуса на 'sold' успешно выполнено.\");",
+							"        }",
+							"    } else {",
+							"        console.error(\"Произошла ошибка при обновлении статуса питомца.\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://petstore.swagger.io/v2/pet/{{responseId}}",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						"v2",
+						"pet",
+						"{{responseId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
